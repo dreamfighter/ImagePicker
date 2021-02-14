@@ -50,6 +50,12 @@ internal object DialogHelper {
             dialog.dismiss()
         }
 
+        // Handle Camera option click
+        customView.lytVideoPick.setOnClickListener {
+            listener.onResult(ImageProvider.VIDEO)
+            dialog.dismiss()
+        }
+
         // Handle Gallery option click
         customView.lytGalleryPick.setOnClickListener {
             listener.onResult(ImageProvider.GALLERY)

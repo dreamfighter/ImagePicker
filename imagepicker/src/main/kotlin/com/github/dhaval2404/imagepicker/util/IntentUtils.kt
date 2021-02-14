@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import androidx.core.content.FileProvider
 import com.github.dhaval2404.imagepicker.R
 import java.io.File
@@ -37,6 +38,8 @@ object IntentUtils {
      */
     private fun getGalleryDocumentIntent(mimeTypes: Array<String>): Intent {
         // Show Document Intent
+        Log.d("MIME_TYPE",mimeTypes.size.toString())
+        Log.d("MIME_TYPE",mimeTypes.joinToString(","))
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).applyImageTypes(mimeTypes)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
         return intent
@@ -53,6 +56,7 @@ object IntentUtils {
     private fun Intent.applyImageTypes(mimeTypes: Array<String>): Intent {
         // Apply filter to show image only in intent
         type = "image/*"
+
         if (mimeTypes.isNotEmpty()) {
             putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
         }
@@ -64,6 +68,22 @@ object IntentUtils {
      */
     fun getCameraIntent(context: Context, file: File): Intent? {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // authority = com.github.dhaval2404.imagepicker.provider
+            val authority = context.packageName + context.getString(R.string.image_picker_provider_authority_suffix)
+            val photoURI = FileProvider.getUriForFile(context, authority, file)
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+        } else {
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file))
+        }
+
+        return intent
+    }
+    fun getVideoIntent(context: Context, file: File): Intent? {
+        val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             // authority = com.github.dhaval2404.imagepicker.provider

@@ -8,10 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.github.dhaval2404.imagepicker.constant.ImageProvider
-import com.github.dhaval2404.imagepicker.provider.CameraProvider
-import com.github.dhaval2404.imagepicker.provider.CompressionProvider
-import com.github.dhaval2404.imagepicker.provider.CropProvider
-import com.github.dhaval2404.imagepicker.provider.GalleryProvider
+import com.github.dhaval2404.imagepicker.provider.*
 import java.io.File
 
 /**
@@ -41,6 +38,7 @@ class ImagePickerActivity : AppCompatActivity() {
 
     private var mGalleryProvider: GalleryProvider? = null
     private var mCameraProvider: CameraProvider? = null
+    private var mVideoProvider: VideoProvider? = null
     private lateinit var mCropProvider: CropProvider
     private lateinit var mCompressionProvider: CompressionProvider
 
@@ -72,6 +70,7 @@ class ImagePickerActivity : AppCompatActivity() {
         outState.putSerializable(STATE_IMAGE_FILE, mImageFile)
         mCameraProvider?.onSaveInstanceState(outState)
         mCropProvider.onSaveInstanceState(outState)
+        mVideoProvider?.onSaveInstanceState(outState)
         super.onSaveInstanceState(outState)
     }
 
@@ -103,6 +102,12 @@ class ImagePickerActivity : AppCompatActivity() {
                 // Pick Camera Image
                 savedInstanceState ?: mCameraProvider?.startIntent()
             }
+            ImageProvider.VIDEO -> {
+                mVideoProvider = VideoProvider(this)
+                mVideoProvider?.onRestoreInstanceState(savedInstanceState)
+                // Pick Camera Image
+                savedInstanceState ?: mVideoProvider?.startIntent()
+            }
             else -> {
                 // Something went Wrong! This case should never happen
                 Log.e(TAG, "Image provider can not be null")
@@ -122,6 +127,7 @@ class ImagePickerActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         mCameraProvider?.onRequestPermissionsResult(requestCode)
         mGalleryProvider?.onRequestPermissionsResult(requestCode)
+        mVideoProvider?.onRequestPermissionsResult(requestCode)
     }
 
     /**
@@ -130,6 +136,7 @@ class ImagePickerActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         mCameraProvider?.onActivityResult(requestCode, resultCode, data)
+        mVideoProvider?.onActivityResult(requestCode, resultCode, data)
         mGalleryProvider?.onActivityResult(requestCode, resultCode, data)
         mCropProvider.onActivityResult(requestCode, resultCode, data)
     }
@@ -149,6 +156,7 @@ class ImagePickerActivity : AppCompatActivity() {
     fun setImage(file: File) {
         mImageFile = file
         when {
+            mCropProvider.isVideo() -> setResult(file)
             mCropProvider.isCropEnabled() -> mCropProvider.startIntent(file)
             mCompressionProvider.isCompressionRequired(file) -> mCompressionProvider.compress(file)
             else -> setResult(file)

@@ -3,11 +3,13 @@ package com.github.dhaval2404.imagepicker.provider
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.github.dhaval2404.imagepicker.ImagePickerActivity
+import com.github.dhaval2404.imagepicker.MediaPicker
 import com.github.dhaval2404.imagepicker.R
 import com.github.dhaval2404.imagepicker.util.FileUriUtils
 import com.github.dhaval2404.imagepicker.util.FileUtil
@@ -36,6 +38,7 @@ class CropProvider(activity: ImagePickerActivity) : BaseProvider(activity) {
     private val mMaxWidth: Int
     private val mMaxHeight: Int
 
+    private val mVideo: Boolean
     private val mCrop: Boolean
     private val mCropAspectX: Float
     private val mCropAspectY: Float
@@ -53,6 +56,7 @@ class CropProvider(activity: ImagePickerActivity) : BaseProvider(activity) {
         mCrop = bundle.getBoolean(ImagePicker.EXTRA_CROP, false)
         mCropAspectX = bundle.getFloat(ImagePicker.EXTRA_CROP_X, 0f)
         mCropAspectY = bundle.getFloat(ImagePicker.EXTRA_CROP_Y, 0f)
+        mVideo = bundle.getBoolean(MediaPicker.EXTRA_VIDEO, false)
 
         // Get File Directory
         val fileDir = bundle.getString(ImagePicker.EXTRA_SAVE_DIRECTORY)
@@ -91,6 +95,8 @@ class CropProvider(activity: ImagePickerActivity) : BaseProvider(activity) {
      */
     fun isCropEnabled() = mCrop
 
+    fun isVideo() = mVideo
+
     /**
      * Start Crop Activity
      */
@@ -106,6 +112,9 @@ class CropProvider(activity: ImagePickerActivity) : BaseProvider(activity) {
     private fun cropImage(file: File) {
         val uri = Uri.fromFile(file)
         val extension = FileUriUtils.getImageExtension(uri)
+        if(extension.contains("video", ignoreCase = true)){
+            return
+        }
         mCropImageFile = FileUtil.getImageFile(dir = mFileDir, extension = extension)
 
         if (mCropImageFile == null || !mCropImageFile!!.exists()) {

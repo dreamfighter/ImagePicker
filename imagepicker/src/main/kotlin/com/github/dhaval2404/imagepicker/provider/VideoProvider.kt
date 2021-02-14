@@ -23,7 +23,7 @@ import java.io.File
  * @version 1.0
  * @since 04 January 2019
  */
-class CameraProvider(activity: ImagePickerActivity) : BaseProvider(activity) {
+class VideoProvider(activity: ImagePickerActivity) : BaseProvider(activity) {
 
     companion object {
         /**
@@ -139,12 +139,12 @@ class CameraProvider(activity: ImagePickerActivity) : BaseProvider(activity) {
      */
     private fun startCameraIntent() {
         // Create and get empty file to store capture image content
-        val file = FileUtil.getImageFile(dir = mFileDir)
+        val file = FileUtil.getVideoFile(dir = mFileDir)
         mCameraFile = file
 
         // Check if file exists
         if (file != null && file.exists()) {
-            var cameraIntent = IntentUtils.getCameraIntent(this, file)
+            var cameraIntent = IntentUtils.getVideoIntent(this, file)
             //if(isVideoEnable()){
             //    cameraIntent = IntentUtils.getVideoIntent(this, file)
             //}
