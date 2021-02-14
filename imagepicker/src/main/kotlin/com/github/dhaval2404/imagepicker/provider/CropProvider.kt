@@ -3,10 +3,10 @@ package com.github.dhaval2404.imagepicker.provider
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.webkit.MimeTypeMap
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.github.dhaval2404.imagepicker.ImagePickerActivity
 import com.github.dhaval2404.imagepicker.MediaPicker
@@ -16,6 +16,7 @@ import com.github.dhaval2404.imagepicker.util.FileUtil
 import com.yalantis.ucrop.UCrop
 import java.io.File
 import java.io.IOException
+
 
 /**
  * Crop Selected/Captured Image
@@ -95,7 +96,20 @@ class CropProvider(activity: ImagePickerActivity) : BaseProvider(activity) {
      */
     fun isCropEnabled() = mCrop
 
-    fun isVideo() = mVideo
+    fun isVideo(uri: String):Boolean{
+        val mime = getMimeType(uri)
+        mime?.let {
+            if(it.contains("video")){
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun getMimeType(fileUrl: String): String? {
+        val extension = MimeTypeMap.getFileExtensionFromUrl(fileUrl)
+        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
+    }
 
     /**
      * Start Crop Activity
@@ -140,12 +154,12 @@ class CropProvider(activity: ImagePickerActivity) : BaseProvider(activity) {
             uCrop.start(activity, UCrop.REQUEST_CROP)
         } catch (ex: ActivityNotFoundException) {
             setError(
-                "uCrop not specified in manifest file." +
-                        "Add UCropActivity in Manifest" +
-                        "<activity\n" +
-                        "    android:name=\"com.yalantis.ucrop.UCropActivity\"\n" +
-                        "    android:screenOrientation=\"portrait\"\n" +
-                        "    android:theme=\"@style/Theme.AppCompat.Light.NoActionBar\"/>"
+                    "uCrop not specified in manifest file." +
+                            "Add UCropActivity in Manifest" +
+                            "<activity\n" +
+                            "    android:name=\"com.yalantis.ucrop.UCropActivity\"\n" +
+                            "    android:screenOrientation=\"portrait\"\n" +
+                            "    android:theme=\"@style/Theme.AppCompat.Light.NoActionBar\"/>"
             )
             ex.printStackTrace()
         }

@@ -156,7 +156,7 @@ class ImagePickerActivity : AppCompatActivity() {
     fun setImage(file: File) {
         mImageFile = file
         when {
-            mCropProvider.isVideo() -> setResult(file)
+            mCropProvider.isVideo(file.absolutePath) -> setResult(file)
             mCropProvider.isCropEnabled() -> mCropProvider.startIntent(file)
             mCompressionProvider.isCompressionRequired(file) -> mCompressionProvider.compress(file)
             else -> setResult(file)
