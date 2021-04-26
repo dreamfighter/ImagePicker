@@ -139,7 +139,7 @@ class CameraProvider(activity: ImagePickerActivity) : BaseProvider(activity) {
      */
     private fun startCameraIntent() {
         // Create and get empty file to store capture image content
-        val file = FileUtil.getImageFile(dir = mFileDir)
+        val file = FileUtil.getImageFile(this, dir = mFileDir)
         mCameraFile = file
 
         // Check if file exists

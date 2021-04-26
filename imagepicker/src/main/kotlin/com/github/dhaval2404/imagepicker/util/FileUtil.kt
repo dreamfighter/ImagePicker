@@ -1,13 +1,20 @@
 package com.github.dhaval2404.imagepicker.util
 
+import android.content.Context
 import android.graphics.Bitmap
+import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.os.StatFs
-import java.io.File
-import java.io.IOException
+import android.util.Log
+import androidx.core.content.FileProvider
+import androidx.documentfile.provider.DocumentFile
+
+import id.dreamfighter.android.utils.CommonUtils
+import id.dreamfighter.android.utils.FileUtils
+import java.io.*
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 /**
  * File Utility Methods
@@ -28,7 +35,7 @@ object FileUtil {
      * @return Return Empty file to store camera image.
      * @throws IOException if permission denied of failed to create new file.
      */
-    fun getImageFile(dir: File? = null, extension: String? = null): File? {
+    fun getImageFile(context: Context, dir: File? = null, extension: String? = null): File? {
         try {
             // Create an image file name
             val ext = extension ?: ".jpg"
@@ -43,14 +50,73 @@ object FileUtil {
             // Create File Object
             val file = File(storageDir, imageFileName)
 
+            /*
+            val image = File.createTempFile(
+                imageFileName, /* prefix */
+                ext, /* suffix */
+                storageDir      /* directory */
+            )
+             */
+            Log.d("getImageFile", file.absolutePath)
+            createFile(context, file.absolutePath)?.close()
             // Create empty file
-            file.createNewFile()
+            //file.createNewFile()
 
             return file
         } catch (ex: IOException) {
             ex.printStackTrace()
             return null
         }
+    }
+
+    fun createFile(context: Context, fileName: String?): OutputStream? {
+        val f = File(fileName)
+        //val dir = CommonUtils.getRealDirectory(context)
+        val dir = getCameraDirectory()
+        val inputStream: InputStream? = null
+        var outputStream: OutputStream? = null
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                try {
+                    val uriStr =  getCameraDirectory().absolutePath
+                    val permissions = context.contentResolver.persistedUriPermissions
+                    var uri: Uri? = null
+                    for (p in permissions) {
+                        //Log.d("Uri",p.getUri().getPath());
+                        //Log.d("Uri expected",Uri.fromFile(f.getParentFile()).getPath());
+                        if (uriStr != null && uriStr == p.uri.toString()) {
+                            uri = p.uri
+                            break
+                        }
+                    }
+                    if (uri != null) {
+                        val pickedDir: DocumentFile? = DocumentFile.fromTreeUri(context, uri)
+                        var file: DocumentFile? = pickedDir?.findFile(f.name)
+                        if (file == null) {
+                            file = pickedDir?.createFile("*/*", f.name)
+                        }
+                        outputStream = context.contentResolver.openOutputStream(file?.getUri(), "w")
+                    }
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            if (outputStream == null) {
+                val realFile = File(dir, f.name)
+                FileProvider.getUriForFile(
+                    context,
+                    context.packageName + ".provider", realFile
+                )
+                outputStream = FileOutputStream(realFile)
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return null
+        }
+        //sink.flush();
+        //sink.close();
+        //return Observable.just(f);
+        return outputStream
     }
 
     /**
@@ -94,7 +160,8 @@ object FileUtil {
      * @return File Camera Image Directory
      */
     private fun getCameraDirectory(): File {
-        val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
+
+        val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
         return File(dir, "Camera")
     }
 

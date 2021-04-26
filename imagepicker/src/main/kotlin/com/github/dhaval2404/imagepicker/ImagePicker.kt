@@ -312,7 +312,7 @@ open class ImagePicker {
          * Pick Image Provider if not specified
          */
         private fun showImageProviderDialog(reqCode: Int) {
-            DialogHelper.showChooseAppDialog(activity, object : ResultListener<ImageProvider> {
+            DialogHelper.showChooseAppDialog(R.layout.dialog_image_chooser,activity, object : ResultListener<ImageProvider> {
                 override fun onResult(t: ImageProvider?) {
                     t?.let {
                         imageProvider = it
@@ -327,7 +327,7 @@ open class ImagePicker {
          * Pick Image Provider if not specified
          */
         private fun showImageProviderDialog(completionHandler: ((resultCode: Int, data: Intent?) -> Unit)? = null) {
-            DialogHelper.showChooseAppDialog(activity, object : ResultListener<ImageProvider> {
+            DialogHelper.showChooseAppDialog(R.layout.dialog_image_chooser,activity, object : ResultListener<ImageProvider> {
                 override fun onResult(t: ImageProvider?) {
                     if (t != null) {
                         imageProvider = t

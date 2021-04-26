@@ -129,7 +129,7 @@ class CropProvider(activity: ImagePickerActivity) : BaseProvider(activity) {
         if(extension.contains("video", ignoreCase = true)){
             return
         }
-        mCropImageFile = FileUtil.getImageFile(dir = mFileDir, extension = extension)
+        mCropImageFile = FileUtil.getImageFile(this, dir = mFileDir, extension = extension)
 
         if (mCropImageFile == null || !mCropImageFile!!.exists()) {
             Log.e(TAG, "Failed to create crop image file")

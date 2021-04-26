@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.github.dhaval2404.imagepicker.ImagePicker
+import com.github.dhaval2404.imagepicker.MediaPicker
 import com.github.dhaval2404.imagepicker.sample.util.FileUtil
 import com.github.dhaval2404.imagepicker.sample.util.IntentUtil
 import java.io.File
@@ -60,8 +61,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun pickProfileImage(view: View) {
-        ImagePicker.with(this)
+        MediaPicker.with(this)
             // Crop Square image
+
             .cropSquare()
             .setImageProviderInterceptor { imageProvider -> // Intercept ImageProvider
                 Log.d("ImagePicker", "Selected ImageProvider: " + imageProvider.name)
@@ -75,7 +77,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun pickGalleryImage(view: View) {
-        ImagePicker.with(this)
+        MediaPicker.with(this)
             // Crop Image(User can choose Aspect Ratio)
             .crop()
             // User can only select image from Gallery
@@ -94,7 +96,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun pickCameraImage(view: View) {
-        ImagePicker.with(this)
+        MediaPicker.with(this)
             // User can only capture image from Camera
             .cameraOnly()
             // Image size will be less than 1024 KB
