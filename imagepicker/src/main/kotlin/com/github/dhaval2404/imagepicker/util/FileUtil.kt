@@ -129,7 +129,7 @@ object FileUtil {
      * @return Return Empty file to store camera image.
      * @throws IOException if permission denied of failed to create new file.
      */
-    fun getVideoFile(dir: File? = null, extension: String? = null): File? {
+    fun getVideoFile(context:Context, dir: File? = null, extension: String? = null): File? {
         try {
             // Create an image file name
             val ext = extension ?: ".mp4"
@@ -144,8 +144,10 @@ object FileUtil {
             // Create File Object
             val file = File(storageDir, imageFileName)
 
+            Log.d("getImageFile", file.absolutePath)
+            createFile(context, file.absolutePath)?.close()
             // Create empty file
-            file.createNewFile()
+            //file.createNewFile()
 
             return file
         } catch (ex: IOException) {

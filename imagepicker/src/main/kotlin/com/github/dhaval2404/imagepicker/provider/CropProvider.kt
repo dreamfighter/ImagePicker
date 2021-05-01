@@ -98,6 +98,7 @@ class CropProvider(activity: ImagePickerActivity) : BaseProvider(activity) {
 
     fun isVideo(uri: String):Boolean{
         val mime = getMimeType(uri)
+        Log.d("getMimeType","$mime")
         mime?.let {
             if(it.contains("video")){
                 return true
