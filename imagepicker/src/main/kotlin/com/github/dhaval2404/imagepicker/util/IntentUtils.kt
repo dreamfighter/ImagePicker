@@ -8,6 +8,7 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import androidx.core.content.FileProvider
+import com.github.dhaval2404.imagepicker.MediaPicker
 import com.github.dhaval2404.imagepicker.R
 import java.io.File
 
@@ -40,8 +41,12 @@ object IntentUtils {
         // Show Document Intent
         Log.d("MIME_TYPE",mimeTypes.size.toString())
         Log.d("MIME_TYPE",mimeTypes.joinToString(","))
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).applyImageTypes(mimeTypes)
+        val intent = Intent(Intent.ACTION_GET_CONTENT).applyImageTypes(mimeTypes)
+        //intent.putExtra(MediaPicker.EXTRA_MIME_TYPES, mimeTypes)
+        intent.type = "image/*"
         intent.addCategory(Intent.CATEGORY_OPENABLE)
+
+
         return intent
     }
 
